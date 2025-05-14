@@ -1,0 +1,89 @@
+// Espera o DOM carregar completamente antes de executar o script
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Funcionalidade do Menu Mobile (Hamburguer)
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuLista = document.getElementById('menu-lista');
+
+    if (menuToggle && menuLista) {
+        menuToggle.addEventListener('click', function() {
+            // Alterna a classe 'active' no botão hamburguer para animação
+            this.classList.toggle('active');
+            // Alterna a classe 'active' na lista do menu para mostrar/esconder
+            menuLista.classList.toggle('active');
+
+            // Atualiza o atributo aria-expanded para acessibilidade
+            const isExpanded = this.getAttribute('aria-expanded') === 'true' || false;
+            this.setAttribute('aria-expanded', !isExpanded);
+        });
+
+        // Fecha o menu mobile ao clicar em um link (útil para one-page)
+        const menuLinks = menuLista.querySelectorAll('a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (menuLista.classList.contains('active')) {
+                    menuToggle.classList.remove('active');
+                    menuLista.classList.remove('active');
+                    menuToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+    }
+
+    // Atualiza o ano no rodapé automaticamente
+    const anoAtualSpan = document.getElementById('ano-atual');
+    if (anoAtualSpan) {
+        anoAtualSpan.textContent = new Date().getFullYear();
+    }
+
+    // Simulação de envio de formulário de contato (apenas front-end)
+    const formularioContato = document.getElementById('formulario-contato');
+    if (formularioContato) {
+        formularioContato.addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o envio real do formulário
+
+            // Pega os valores dos campos (poderia ser usado para validação mais complexa)
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const mensagem = document.getElementById('mensagem').value;
+
+            if (nome && email && mensagem) {
+                alert('Mensagem enviada com sucesso! (Simulação)\n\nNome: ' + nome + '\nEmail: ' + email + '\nMensagem: ' + mensagem);
+                this.reset(); // Limpa o formulário
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        });
+    }
+
+    // Opcional: Adicionar classe 'active' ao link do menu da seção visível (Scroll Spy)
+    // Esta é uma implementação básica. Para algo mais robusto, bibliotecas podem ser usadas.
+    const sections = document.querySelectorAll('main section[id]');
+    const navLi = document.querySelectorAll('#menu-principal ul li a');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            // A altura do cabeçalho deve ser considerada para a ativação correta
+            const headerHeight = document.getElementById('cabecalho').offsetHeight;
+            if (pageYOffset >= sectionTop - headerHeight - 20) { // -20 é uma margem de tolerância
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLi.forEach(a => {
+            a.classList.remove('active');
+            if (a.getAttribute('href').substring(1) === current) {
+                a.classList.add('active');
+            }
+        });
+        // Caso especial para o topo da página (seção "inicio")
+        if (pageYOffset < sections[0].offsetTop - document.getElementById('cabecalho').offsetHeight) {
+             navLi.forEach(a => a.classList.remove('active'));
+             const inicioLink = document.querySelector('#menu-principal ul li a[href="#inicio"]');
+             if (inicioLink) inicioLink.classList.add('active');
+        }
+    });
+
+}); // Fim do DOMContentLoaded
